@@ -8,6 +8,19 @@
   <!--<link rel="stylesheet" href="css/masonry-layout-vanilla.min.css" />-->
 
   <style>
+    body::-webkit-scrollbar {
+      width: 0.75em;
+    }
+
+    body::-webkit-scrollbar-track {
+      box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    }
+
+    body::-webkit-scrollbar-thumb {
+      background-color: darkgrey;
+      outline: 1px solid slategrey;
+    }
+
     .masonry-layout {
       box-sizing: border-box;
       --columns: 1;
@@ -70,7 +83,7 @@
 
     body {
       background-color: #e0e1e2;
-      margin: 0
+      margin: 0;
     }
 
     a {
@@ -97,7 +110,8 @@
     }
 
     img {
-      width: 100%;
+      max-width: 99%;
+      width: auto;
       display: block;
       border-radius: 2px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -222,7 +236,10 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      body { background: rgb(58, 57, 57); color:  #ddd; }
+      body {
+        background: rgb(58, 57, 57);
+        color: #ddd;
+      }
     }
   </style>
 </head>
@@ -266,6 +283,31 @@
       });
     };
 
+    function load_handler(event, new_image) {
+      var target_el;
+      try {
+        target_el = event.path[0];
+      } catch (error) { }
+
+      if (target_el == undefined) {  // shim for firefox
+        target_el = event.srcElement;
+      }
+
+      if (new_image.getAttribute('loaded') == 'true') {
+        target_el.nextSibling.width = target_el.width;
+        target_el.nextSibling.style.display = 'block';
+        return false;
+      }
+      console.log(event);
+      setTimeout(function () {
+        //console.log(target_el);
+        target_el.src = target_el.src.replace('&blur=60&quality=10&filt=greyscale', '');
+        new_image.setAttribute('loaded', 'true');
+        target_el.nextSibling.style.width = target_el.width + 'px';
+        target_el.nextSibling.style.display = 'block';
+      }, 100);
+    }
+
     const addMeldungImage = async (meldung) => {
       let img_src = meldung['imageMediumUrl'];
       if (img_src != undefined) {
@@ -295,33 +337,29 @@
           img_container.append(img_caption);
 
           let new_image = document.createElement('img');
-          new_image.src = "https://images.weserv.nl?url=" + img_src + "&output=webp" + "&blur=55&quality=10&filter=greyscale";
+          new_image.src = "https://images.weserv.nl?url=" + img_src + "&output=webp" + "&blur=60&quality=10&filt=greyscale";
           new_image.loading = 'lazy';
           new_image.decoding = 'async';
           new_image.id = 'image-' + id_int;
           new_image.title = meldung['place'] + timestamp_str;
           new_image.setAttribute('loaded', 'false');
 
-          new_image.addEventListener('load', function (event) {
-            if (new_image.getAttribute('loaded') == 'true') {
-              event.path[0].nextSibling.width = event.path[0].width;
-              event.path[0].nextSibling.style.display = 'block';
-              return false;
-            }
-            //console.log(event);
-            setTimeout(function () {
-              //console.log(event.path[0]);
-              event.path[0].src = event.path[0].src.replace('&blur=55&quality=10&filter=greyscale', '');
-              new_image.setAttribute('loaded', 'true');
-              event.path[0].nextSibling.style.width = event.path[0].width + 'px';
-              event.path[0].nextSibling.style.display = 'block';
-            }, 100);
-          });
+          new_image.addEventListener('load', function (event) { load_handler(event, new_image) });
+          new_image.addEventListener('onload', function (event) { load_handler(event, new_image) });  // shim for firefox
           new_image.addEventListener('error', function (event) {
             //console.log(event);
             setTimeout(function () {
-              event.path[0].style.display = 'none';
-              console.log('ERROR: failed to load "' + event.path[0].src + '" ');
+              var target_el;
+              try {
+                target_el = event.path[0];
+              } catch (error) { }
+
+              if (target_el == undefined) { // shim for firefox
+                target_el = event.srcElement;
+              }
+
+              target_el.style.display = 'none';
+              console.log('ERROR: failed to load "' + target_el.src + '" ');
             }, 100);
           });
 
@@ -354,9 +392,9 @@
               fetchMasonry('masonry', 'image', 1);
             } else if (screen.width < 800) {
               fetchMasonry('masonry', 'image', 2);
-            }else if(screen.width < 1000){
+            } else if (screen.width < 1000) {
               fetchMasonry('masonry', 'image', 3);
-            }else{
+            } else {
               fetchMasonry('masonry', 'image', 4);
             }
           });
