@@ -1,3 +1,3 @@
 /* Test JS */
-fecthMasonry('masonry', 'card', 4);
-fecthMasonry('masonry-2', 'image', 4);
+fetchMasonry('masonry', 'card', 4);
+fetchMasonry('masonry-2', 'image', 4);

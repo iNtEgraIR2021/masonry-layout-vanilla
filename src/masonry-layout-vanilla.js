@@ -1,4 +1,4 @@
-var fecthMasonry = function (container, items, columns) {
+var fetchMasonry = function (container, items, columns) {
     var CONTAINER_EL = document.querySelector("#" + container);
     var WRAPPER_CONTAINER_EL = CONTAINER_EL.parentNode;
     var ITEMS_ELS = document.querySelectorAll("." + items);

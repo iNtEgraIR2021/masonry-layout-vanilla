@@ -88,9 +88,9 @@ Then in your script, when calling the method:
 
 ```js
 // This would be the masonry of images
-fecthMasonry('masonry', 'image', 4);
+fetchMasonry('masonry', 'image', 4);
 // This would be the masonry of cards
-fecthMasonry('masonry-2', 'card', 3);
+fetchMasonry('masonry-2', 'card', 3);
 ```
 
 &nbsp;

@@ -1,4 +1,4 @@
-const fecthMasonry = (container:string, items:string, columns:number) => {
+const fetchMasonry = (container:string, items:string, columns:number) => {
   const CONTAINER_EL = document.querySelector(`#${container}`);
   const WRAPPER_CONTAINER_EL = CONTAINER_EL.parentNode;
 
